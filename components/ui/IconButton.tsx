@@ -1,11 +1,11 @@
 import { Image, Pressable, StyleSheet, View, ViewStyle } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { useMemo } from 'react';
 import { COLORS } from '../../constants';
-import { IoniconsType } from '../../types/expo-icons';
+import { FontAwesomeType } from '../../types/expo-icons';
 
 interface IconButtonProps {
-  icon?: IoniconsType;
+  icon?: FontAwesomeType;
   src?: string;
   color?: string;
   bgColor?: string;
@@ -95,7 +95,7 @@ function IconButton({
       style={({ pressed }) => pressed && styles.pressed}
     >
       <View style={[buttonStyle, type === 'ellipse' && ellipseStyle]}>
-        {icon && <Ionicons name={icon} size={iconSize} color={color} />}
+        {icon && <FontAwesome name={icon} size={iconSize} color={color} />}
         {src && (
           <Image
             source={{ uri: src }}

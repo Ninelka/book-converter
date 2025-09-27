@@ -6,15 +6,15 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { ReactNode, useMemo } from 'react';
 import { COLORS, FONT_FAMILY, GlobalStyles } from '../../constants';
-import { IoniconsType } from '../../types/expo-icons';
+import { FontAwesomeType } from '../../types/expo-icons';
 
-interface IButton {
+interface ButtonProps {
   children: ReactNode;
-  iconLeft?: IoniconsType;
-  iconRight?: IoniconsType;
+  iconLeft?: FontAwesomeType;
+  iconRight?: FontAwesomeType;
   onPress?: () => void;
   type?: 'primary' | 'secondary' | 'transparent';
   shape?: 'rectangle' | 'ellipse' | 'rounded';
@@ -39,7 +39,7 @@ function Button({
   isDisabled,
   style,
   textStyle,
-}: IButton) {
+}: ButtonProps) {
   const btnBorderRadius = useMemo(() => {
     switch (shape) {
       case 'ellipse':
@@ -144,7 +144,9 @@ function Button({
         style={({ pressed }) => [pressed && styles.pressed]}
       >
         <View style={buttonStyle}>
-          {iconLeft && <Ionicons name={iconLeft} size={20} color={iconColor} />}
+          {iconLeft && (
+            <FontAwesome name={iconLeft} size={20} color={iconColor} />
+          )}
           <Text
             style={[
               styles.buttonText,
@@ -157,7 +159,7 @@ function Button({
             {children}
           </Text>
           {iconRight && (
-            <Ionicons name={iconRight} size={20} color={iconColor} />
+            <FontAwesome name={iconRight} size={20} color={iconColor} />
           )}
         </View>
       </Pressable>

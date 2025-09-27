@@ -11,7 +11,7 @@ import { useRef, useMemo, useState } from 'react';
 import Button from './Button';
 import IconButton from './IconButton';
 import { COLORS, FONT_FAMILY, GlobalStyles } from '../../constants';
-import { IoniconsType } from '../../types/expo-icons';
+import { FontAwesomeType } from '../../types/expo-icons';
 
 interface InputProps {
   label?: string;
@@ -22,7 +22,7 @@ interface InputProps {
   keyboardType?: KeyboardType;
   onBtnPress?: () => void;
   onChangeText?: (value: string) => void;
-  iconRight?: IoniconsType;
+  iconRight?: FontAwesomeType;
   iconRightPress?: () => void;
   secureText?: boolean;
   inputStyle?: TextStyle;
