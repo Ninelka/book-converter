@@ -1,15 +1,16 @@
 import { useState } from 'react';
-import * as DocumentPicker from 'expo-document-picker';
+import { DocumentPickerAsset, getDocumentAsync } from 'expo-document-picker';
 import Toast from 'react-native-toast-message';
 import { FileConversionService } from '../services/fileConversion.service';
 
 export const useFileConverter = () => {
-  const [selectedFile, setSelectedFile] =
-    useState<DocumentPicker.DocumentPickerAsset | null>(null);
+  const [selectedFile, setSelectedFile] = useState<DocumentPickerAsset | null>(
+    null
+  );
   const [outputFormat, setOutputFormat] = useState('epub');
 
   const handleFileUpload = async () => {
-    const result = await DocumentPicker.getDocumentAsync({});
+    const result = await getDocumentAsync({});
     const file = result?.assets?.[0];
 
     if (!result.canceled && file) {
