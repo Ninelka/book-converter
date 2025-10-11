@@ -1,5 +1,8 @@
 import { DocumentPickerAsset } from 'expo-document-picker';
-import * as MailComposer from 'expo-mail-composer';
+import * as FileSystem from 'expo-file-system/legacy';
+import { arrayBufferToBase64 } from './arrayBufferToBase64';
+import { MAX_FILE_SIZE } from '../constants/file';
+import { sendConvertedFileToEmail } from './sendConvertedFileToEmail';
 
 export interface ConversionRequest {
   file: DocumentPickerAsset;
@@ -15,8 +18,7 @@ export class FileConversionService {
   static validateFileSize(file: DocumentPickerAsset | null): boolean {
     if (!file?.size) return false;
 
-    // TODO: move value to constants
-    return file.size <= 200000000;
+    return file.size <= MAX_FILE_SIZE;
   }
 
   static validateEmail(email: string): boolean {
@@ -26,18 +28,39 @@ export class FileConversionService {
   }
 
   static async convertAndSend(request: ConversionRequest): Promise<void> {
-    // TODO: add conversion by API
-    console.log(`Converting ${request.file.name} to ${request.outputFormat}`);
+    const formData = new FormData();
 
-    const isAvailable = await MailComposer.isAvailableAsync();
-    if (!isAvailable) throw new Error('Email client is not available!');
-
-    await MailComposer.composeAsync({
-      recipients: [request.email],
-      subject: '',
-      body: '',
-      attachments: [request.file.uri],
+    // @ts-ignore В Expo/React Native допускается передавать файл как объект
+    formData.append('file', {
+      uri: request.file.uri,
+      name: request.file.name,
+      type: request.file.mimeType || 'application/octet-stream',
     });
+    formData.append('format', request.outputFormat);
+
+    const apiUrl = 'https://converter-server-five.vercel.app/api/convert';
+
+    const response = await fetch(apiUrl, { method: 'POST', body: formData });
+
+    if (!response.ok) {
+      throw new Error(`Conversion failed: ${await response.text()}`);
+    }
+
+    // Получаем сконвертированный файл и преобразуем ArrayBuffer → base64 строку
+    const arrayBuffer = await response.arrayBuffer();
+    const base64String = arrayBufferToBase64(arrayBuffer);
+
+    const outputFileName =
+      request.file.name.replace(/\.[^/.]+$/, '') + '.' + request.outputFormat;
+    const outputPath = FileSystem.documentDirectory + outputFileName;
+
+    await FileSystem.writeAsStringAsync(outputPath, base64String, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+
+    await sendConvertedFileToEmail(request.email, outputPath);
+
+    await FileSystem.deleteAsync(outputPath);
   }
 
   static getValidationMessage(
