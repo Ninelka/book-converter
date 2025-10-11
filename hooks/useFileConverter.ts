@@ -43,11 +43,6 @@ export const useFileConverter = () => {
           outputFormat,
           email,
         });
-
-        Toast.show({
-          type: 'success',
-          text1: `Converting and sending "${selectedFile.name}" to ${email}`,
-        });
       } catch (error) {
         Toast.show({
           type: 'error',
