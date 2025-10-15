@@ -1,4 +1,5 @@
 import * as MailComposer from 'expo-mail-composer';
+import * as FileSystem from 'expo-file-system/legacy';
 
 export const sendConvertedFileToEmail = async (
   email: string,
@@ -17,4 +18,10 @@ export const sendConvertedFileToEmail = async (
     body: '',
     attachments: [outputPath],
   });
+
+  try {
+    await FileSystem.deleteAsync(outputPath, { idempotent: true });
+  } catch (e) {
+    console.warn('Ошибка удаления временного файла:', e);
+  }
 };

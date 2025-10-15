@@ -59,8 +59,6 @@ export class FileConversionService {
     });
 
     await sendConvertedFileToEmail(request.email, outputPath);
-
-    await FileSystem.deleteAsync(outputPath);
   }
 
   static getValidationMessage(
