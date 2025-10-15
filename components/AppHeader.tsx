@@ -5,7 +5,7 @@ import { FONT_FAMILY, GlobalStyles } from '../constants';
 export const AppHeader = () => {
   return (
     <View style={styles.header}>
-      <Text style={styles.title}>File Converter</Text>
+      <Text style={styles.title}>Book Converter</Text>
       <SettingsDialog />
     </View>
   );
