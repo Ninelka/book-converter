@@ -18,7 +18,7 @@ export const FileInfo = ({ selectedFile, outputFormat }: FileInfoProps) => {
     <View style={styles.container}>
       <View style={styles.row}>
         <Text style={styles.title}>File:</Text>
-        <Text numberOfLines={1}>{selectedFile.name}</Text>
+        <Text numberOfLines={3}>{selectedFile.name}</Text>
       </View>
       <View style={styles.row}>
         <Text style={styles.title}>Size:</Text>
@@ -42,10 +42,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: GlobalStyles.spacing.xs,
+    flexWrap: 'wrap',
   },
   title: {
     fontWeight: 'bold',
     fontSize: GlobalStyles.fontSize.callout,
-    minWidth: 80,
+    width: 100,
   },
 });
