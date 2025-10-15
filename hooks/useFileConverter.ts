@@ -15,10 +15,6 @@ export const useFileConverter = () => {
 
     if (!result.canceled && file) {
       setSelectedFile(file);
-      Toast.show({
-        type: 'success',
-        text1: `File "${file.name}" uploaded successfully`,
-      });
     }
   };
 
@@ -42,6 +38,12 @@ export const useFileConverter = () => {
           file: selectedFile,
           outputFormat,
           email,
+        }).then(() => {
+          Toast.show({
+            type: 'success',
+            text1: `File converted & sent successfully`,
+          });
+          setSelectedFile(null);
         });
       } catch (error) {
         Toast.show({
