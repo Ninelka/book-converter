@@ -25,7 +25,9 @@ export const FileUploadButton = ({
     >
       <View style={styles.container}>
         <FontAwesome name="upload" size={40} color={COLORS.primaryOrange} />
-        <Text>{selectedFile ? selectedFile.name : 'Upload File'}</Text>
+        <Text style={styles.title}>
+          {selectedFile ? selectedFile.name : 'Upload File'}
+        </Text>
       </View>
     </Pressable>
   );
@@ -34,6 +36,9 @@ export const FileUploadButton = ({
 const styles = StyleSheet.create({
   pressed: {
     opacity: 0.7,
+  },
+  title: {
+    fontSize: GlobalStyles.fontSize.button,
   },
   container: {
     justifyContent: 'center',
