@@ -1,5 +1,7 @@
 import { Picker } from '@react-native-picker/picker';
 
+const AVAILABLE_FORMATS = ['epub', 'fb2', 'mobi', 'pdf', 'txt', 'azw3'];
+
 interface SelectFormatProps {
   outputFormat: string;
   onFormatChange: (format: string) => void;
@@ -9,8 +11,6 @@ export const SelectFormat = ({
   outputFormat,
   onFormatChange,
 }: SelectFormatProps) => {
-  const formats = ['epub', 'mobi', 'pdf', 'txt', 'azw3'];
-
   return (
     <>
       <Picker
@@ -18,7 +18,7 @@ export const SelectFormat = ({
         selectedValue={outputFormat}
         onValueChange={(itemValue) => onFormatChange(itemValue)}
       >
-        {formats.map((format) => (
+        {AVAILABLE_FORMATS.map((format) => (
           <Picker.Item
             key={format}
             label={format.toUpperCase()}
