@@ -9,6 +9,9 @@ export const useFileConverter = () => {
   );
   const [outputFormat, setOutputFormat] = useState('epub');
   const [isConverting, setIsConverting] = useState(false);
+  const [isSendingEnabled, setIsSendingEnabled] = useState(true);
+
+  const toggleSwitch = () => setIsSendingEnabled((prev) => !prev);
 
   const handleFileUpload = async () => {
     const result = await getDocumentAsync({});
@@ -66,5 +69,7 @@ export const useFileConverter = () => {
     handleSendToKindle,
     handleFormatChange: setOutputFormat,
     isConverting,
+    isSendingEnabled,
+    toggleSwitch,
   };
 };

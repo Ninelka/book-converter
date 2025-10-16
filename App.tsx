@@ -7,6 +7,8 @@ import Toast from 'react-native-toast-message';
 import { SettingsProvider } from './context/SettingsProvider';
 import { useFileConverter } from './hooks/useFileConverter';
 import { COLORS } from './constants';
+import { SendingSwitch } from './components/SendingSwitch';
+import { SaveButton } from './components/SaveButton';
 
 export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -19,6 +21,8 @@ export default function App() {
     handleFormatChange,
     handleSendToKindle,
     isConverting,
+    isSendingEnabled,
+    toggleSwitch,
   } = useFileConverter();
 
   return (
@@ -43,11 +47,20 @@ export default function App() {
             onFormatChange={handleFormatChange}
           />
         </View>
-        <SendButton
-          selectedFile={selectedFile}
-          onSend={() => handleSendToKindle(email)}
-          isConverting={isConverting}
-        />
+        <SendingSwitch isEnabled={isSendingEnabled} onChange={toggleSwitch} />
+        {isSendingEnabled ? (
+          <SendButton
+            selectedFile={selectedFile}
+            onSend={() => handleSendToKindle(email)}
+            isConverting={isConverting}
+          />
+        ) : (
+          <SaveButton
+            selectedFile={selectedFile}
+            // TODO: add saving converted file
+            onSave={() => console.log('File saved to storage!')}
+          />
+        )}
         <Toast />
       </View>
     </SettingsProvider>
