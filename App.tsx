@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { AppHeader } from './components/AppHeader';
 import { SendButton } from './components/SendButton';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import { ConverterPanel } from './components/ConverterPanel';
 import Toast from 'react-native-toast-message';
 import { SettingsProvider } from './context/SettingsProvider';
 import { useFileConverter } from './hooks/useFileConverter';
+import { COLORS } from './constants';
 
 export default function App() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -17,6 +18,7 @@ export default function App() {
     handleFileUpload,
     handleFormatChange,
     handleSendToKindle,
+    isConverting,
   } = useFileConverter();
 
   return (
@@ -29,6 +31,11 @@ export default function App() {
       <View style={styles.container}>
         <AppHeader />
         <View style={styles.content}>
+          {isConverting && (
+            <View style={styles.overlay}>
+              <ActivityIndicator size="large" color={COLORS.primaryOrange} />
+            </View>
+          )}
           <ConverterPanel
             selectedFile={selectedFile}
             outputFormat={outputFormat}
@@ -39,6 +46,7 @@ export default function App() {
         <SendButton
           selectedFile={selectedFile}
           onSend={() => handleSendToKindle(email)}
+          isConverting={isConverting}
         />
         <Toast />
       </View>
@@ -52,7 +60,15 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   content: {
+    position: 'relative',
     flex: 1,
     justifyContent: 'space-around',
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.white,
+    zIndex: 1,
   },
 });

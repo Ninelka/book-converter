@@ -8,6 +8,7 @@ export const useFileConverter = () => {
     null
   );
   const [outputFormat, setOutputFormat] = useState('epub');
+  const [isConverting, setIsConverting] = useState(false);
 
   const handleFileUpload = async () => {
     const result = await getDocumentAsync({});
@@ -34,6 +35,8 @@ export const useFileConverter = () => {
 
     if (selectedFile) {
       try {
+        setIsConverting(true);
+
         await FileConversionService.convertAndSend({
           file: selectedFile,
           outputFormat,
@@ -44,8 +47,10 @@ export const useFileConverter = () => {
             text1: `File converted & sent successfully`,
           });
           setSelectedFile(null);
+          setIsConverting(false);
         });
       } catch (error) {
+        setIsConverting(false);
         Toast.show({
           type: 'error',
           text1: 'Failed to convert and send file',
@@ -60,5 +65,6 @@ export const useFileConverter = () => {
     handleFileUpload,
     handleSendToKindle,
     handleFormatChange: setOutputFormat,
+    isConverting,
   };
 };

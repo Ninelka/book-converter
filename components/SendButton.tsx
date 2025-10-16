@@ -7,9 +7,14 @@ import { useSettingsContext } from '../context/SettingsProvider';
 interface SendButtonProps {
   selectedFile: DocumentPickerAsset | null;
   onSend: () => void;
+  isConverting?: boolean;
 }
 
-export const SendButton = ({ selectedFile, onSend }: SendButtonProps) => {
+export const SendButton = ({
+  selectedFile,
+  onSend,
+  isConverting,
+}: SendButtonProps) => {
   const { email } = useSettingsContext();
 
   return (
@@ -23,7 +28,7 @@ export const SendButton = ({ selectedFile, onSend }: SendButtonProps) => {
         shape="rounded"
         iconLeft="send-o"
         onPress={onSend}
-        isDisabled={!selectedFile || !email}
+        isDisabled={!selectedFile || !email || isConverting}
       >
         Send to Kindle by Email
       </Button>
