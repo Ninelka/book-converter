@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { DocumentPickerAsset, getDocumentAsync } from 'expo-document-picker';
+import { Platform } from 'react-native';
 import Toast from 'react-native-toast-message';
 import { FileConversionService } from '../services/fileConversion.service';
 
@@ -14,7 +15,9 @@ export const useFileConverter = () => {
   const toggleSwitch = () => setIsSendingEnabled((prev) => !prev);
 
   const handleFileUpload = async () => {
-    const result = await getDocumentAsync({});
+    const result = await getDocumentAsync({
+      copyToCacheDirectory: Platform.OS !== 'android',
+    });
     const file = result?.assets?.[0];
 
     if (!result.canceled && file) {
@@ -44,20 +47,24 @@ export const useFileConverter = () => {
           file: selectedFile,
           outputFormat,
           email,
-        }).then(() => {
-          Toast.show({
-            type: 'success',
-            text1: `File converted & sent successfully`,
-          });
-          setSelectedFile(null);
-          setIsConverting(false);
         });
+
+        Toast.show({
+          type: 'success',
+          text1: 'File converted & sent successfully',
+        });
+        setSelectedFile(null);
       } catch (error) {
-        setIsConverting(false);
+        const errorMessage =
+          error instanceof Error ? error.message : String(error);
+        console.error('Failed to convert and send file:', error);
         Toast.show({
           type: 'error',
           text1: 'Failed to convert and send file',
+          text2: errorMessage,
         });
+      } finally {
+        setIsConverting(false);
       }
     }
   };

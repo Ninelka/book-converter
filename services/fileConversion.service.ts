@@ -1,5 +1,7 @@
 import { DocumentPickerAsset } from 'expo-document-picker';
 import * as FileSystem from 'expo-file-system/legacy';
+import { File, Paths } from 'expo-file-system';
+import { fetch } from 'expo/fetch';
 import { arrayBufferToBase64 } from './arrayBufferToBase64';
 import { MAX_FILE_SIZE } from '../constants/file';
 import { sendConvertedFileToEmail } from './sendConvertedFileToEmail';
@@ -28,26 +30,51 @@ export class FileConversionService {
   }
 
   static async convertAndSend(request: ConversionRequest): Promise<void> {
+    const extension = request.file.name.match(/\.[^/.]+$/)?.[0] ?? '';
+    const uploadFile = new File(
+      Paths.cache,
+      `book-converter-upload-${Date.now()}${extension}`
+    );
+    await new File(request.file.uri).copy(uploadFile);
+
     const formData = new FormData();
 
-    // @ts-ignore В Expo/React Native допускается передавать файл как объект
-    formData.append('file', {
-      uri: request.file.uri,
-      name: request.file.name,
-      type: request.file.mimeType || 'application/octet-stream',
-    });
+    formData.append('file', uploadFile, request.file.name);
     formData.append('format', request.outputFormat);
 
     const apiUrl = 'https://converter-server-five.vercel.app/api/convert';
+    const controller = new AbortController();
+    const requestTimeout = setTimeout(() => controller.abort(), 120_000);
 
-    const response = await fetch(apiUrl, { method: 'POST', body: formData });
+    let response: Response;
+    let arrayBuffer: ArrayBuffer;
+    try {
+      response = await fetch(apiUrl, {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal,
+      });
 
-    if (!response.ok) {
-      throw new Error(`Conversion failed: ${await response.text()}`);
+      if (!response.ok) {
+        throw new Error(`Conversion failed: ${await response.text()}`);
+      }
+
+      arrayBuffer = await response.arrayBuffer();
+    } catch (error) {
+      if (controller.signal.aborted) {
+        throw new Error('Conversion request timed out after 2 minutes');
+      }
+      throw error;
+    } finally {
+      clearTimeout(requestTimeout);
+      try {
+        uploadFile.delete();
+      } catch (error) {
+        console.warn('Не удалось удалить копию исходного файла:', error);
+      }
     }
 
     // Получаем сконвертированный файл и преобразуем ArrayBuffer → base64 строку
-    const arrayBuffer = await response.arrayBuffer();
     const base64String = arrayBufferToBase64(arrayBuffer);
 
     const outputFileName =
