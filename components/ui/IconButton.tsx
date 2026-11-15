@@ -61,12 +61,9 @@ function IconButton({
   }, [size]);
 
   const buttonStyle = useMemo(() => {
-    if (type !== 'ellipse') {
-      defaultButtonStyle.borderRadius = 8;
-    }
-
     return {
       ...defaultButtonStyle,
+      ...(type !== 'ellipse' && { borderRadius: 8 }),
       backgroundColor: bgColor,
       width: buttonSize,
       height: buttonSize,

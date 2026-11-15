@@ -1,5 +1,5 @@
 import {
-  KeyboardType,
+  KeyboardTypeOptions,
   StyleSheet,
   Text,
   TextInput,
@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { useRef, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Button from './Button';
 import IconButton from './IconButton';
 import { COLORS, FONT_FAMILY, GlobalStyles } from '../../constants';
@@ -19,7 +19,7 @@ interface InputProps {
   style?: TextStyle;
   invalid?: boolean;
   placeholder?: string;
-  keyboardType?: KeyboardType;
+  keyboardType?: KeyboardTypeOptions;
   onBtnPress?: () => void;
   onChangeText?: (value: string) => void;
   iconRight?: FontAwesomeType;
@@ -47,7 +47,6 @@ function Input({
   size,
 }: InputProps) {
   const [isFocused, setIsFocused] = useState(false);
-  const textInputRef = useRef<TextInput | null>(null);
 
   const inputHeight = useMemo(() => {
     switch (size) {
@@ -90,7 +89,7 @@ function Input({
             isFocused && styles.focusedInput,
           ]}
           placeholder={
-            textInputRef.current?.isFocused() || value !== ''
+            isFocused || value !== ''
               ? undefined
               : placeholder
           }

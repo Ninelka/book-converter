@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: COLORS.white,
