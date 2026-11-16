@@ -7,14 +7,27 @@ import Button from './ui/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { useSettingsContext } from '../context/SettingsProvider';
+import { useState } from 'react';
 
 export const SettingsDialog = () => {
   const { email, setEmail, isSettingsOpen, setIsSettingsOpen } =
     useSettingsContext();
+  const [draftEmail, setDraftEmail] = useState(email);
+
+  const openSettings = () => {
+    setDraftEmail(email);
+    setIsSettingsOpen(true);
+  };
 
   const saveSettings = async () => {
-    await AsyncStorage.setItem(EMAIL_KEY, email);
-    setEmail(email);
+    const value = draftEmail.trim();
+    try {
+      await AsyncStorage.setItem(EMAIL_KEY, value);
+    } catch {
+      Toast.show({ type: 'error', text1: 'Could not save email settings' });
+      return;
+    }
+    setEmail(value);
 
     setIsSettingsOpen(false);
 
@@ -31,7 +44,7 @@ export const SettingsDialog = () => {
         bgColor="transparent"
         color={COLORS.primaryOrange}
         icon="cog"
-        onPress={() => setIsSettingsOpen(true)}
+        onPress={openSettings}
       />
       <Dialog
         open={isSettingsOpen}
@@ -44,9 +57,9 @@ export const SettingsDialog = () => {
         <Input
           keyboardType="email-address"
           placeholder="your-kindle-email@kindle.com"
-          value={email}
+          value={draftEmail}
           label="Email"
-          onChangeText={(value) => setEmail(value)}
+          onChangeText={setDraftEmail}
         />
         <View style={styles.actions}>
           <Button

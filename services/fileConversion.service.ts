@@ -4,7 +4,11 @@ import { File, Paths } from 'expo-file-system';
 import { fetch } from 'expo/fetch';
 import { arrayBufferToBase64 } from './arrayBufferToBase64';
 import { MAX_FILE_SIZE } from '../constants/file';
-import { sendConvertedFileToEmail } from './sendConvertedFileToEmail';
+import {
+  sendConvertedFileToEmail,
+  MailResult,
+} from './sendConvertedFileToEmail';
+import { saveConvertedFile, SaveResult } from './saveConvertedFile';
 
 export interface ConversionRequest {
   file: DocumentPickerAsset;
@@ -29,7 +33,24 @@ export class FileConversionService {
     return email.trim() !== '';
   }
 
-  static async convertAndSend(request: ConversionRequest): Promise<void> {
+  static async convertAndSend(request: ConversionRequest): Promise<MailResult> {
+    const output = await this.convert(request);
+    return sendConvertedFileToEmail(request.email.trim(), output.path);
+  }
+
+  static async convertAndSave(
+    request: Omit<ConversionRequest, 'email'>
+  ): Promise<SaveResult> {
+    const output = await this.convert(request);
+    return saveConvertedFile(output.path, output.name, request.outputFormat);
+  }
+
+  private static async convert(
+    request: Omit<ConversionRequest, 'email'>
+  ): Promise<{ path: string; name: string }> {
+    if (!this.validateFileSize(request.file)) {
+      throw new Error('File is too large or empty (maximum 4 MiB)');
+    }
     const extension = request.file.name.match(/\.[^/.]+$/)?.[0] ?? '';
     const uploadFile = new File(
       Paths.cache,
@@ -85,20 +106,20 @@ export class FileConversionService {
       encoding: FileSystem.EncodingType.Base64,
     });
 
-    await sendConvertedFileToEmail(request.email, outputPath);
+    return { path: outputPath, name: outputFileName };
   }
 
   static getValidationMessage(
     file: DocumentPickerAsset | null,
-    email: string
+    email?: string
   ): string | null {
     if (!this.validateFile(file)) {
       return 'Please upload a file first';
     }
     if (!this.validateFileSize(file)) {
-      return 'File is too large';
+      return 'File is too large or empty (maximum 4 MiB)';
     }
-    if (!this.validateEmail(email)) {
+    if (email !== undefined && !this.validateEmail(email)) {
       return 'Please set your Kindle email in settings';
     }
     return null;

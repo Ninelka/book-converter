@@ -1,21 +1,23 @@
 import Button from './ui/Button';
 import { DocumentPickerAsset } from 'expo-document-picker';
-import { useSettingsContext } from '../context/SettingsProvider';
 
 interface SaveButtonProps {
   selectedFile: DocumentPickerAsset | null;
   onSave: () => void;
+  isConverting?: boolean;
 }
 
-export const SaveButton = ({ selectedFile, onSave }: SaveButtonProps) => {
-  const { email } = useSettingsContext();
-
+export const SaveButton = ({
+  selectedFile,
+  onSave,
+  isConverting,
+}: SaveButtonProps) => {
   return (
     <Button
       shape="rounded"
       iconLeft="download"
       onPress={onSave}
-      isDisabled={!selectedFile || !email}
+      isDisabled={!selectedFile || isConverting}
     >
       Convert and save
     </Button>

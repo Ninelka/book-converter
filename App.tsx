@@ -20,6 +20,7 @@ export default function App() {
     handleFileUpload,
     handleFormatChange,
     handleSendToKindle,
+    handleSave,
     isConverting,
     isSendingEnabled,
     toggleSwitch,
@@ -57,8 +58,8 @@ export default function App() {
         ) : (
           <SaveButton
             selectedFile={selectedFile}
-            // TODO: add saving converted file
-            onSave={() => console.log('File saved to storage!')}
+            onSave={handleSave}
+            isConverting={isConverting}
           />
         )}
         <Toast />
